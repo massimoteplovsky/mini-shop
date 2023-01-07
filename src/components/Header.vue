@@ -6,8 +6,15 @@
       <RouterLink
         to="/"
         class="d-flex align-center text-decoration-none text-md"
-        >Mini Shop <v-icon class="ml-1 text-sm" icon="mdi-cart"></v-icon
-      ></RouterLink>
+      >
+        Mini Shop
+      </RouterLink>
+      <RouterLink
+        to="/cart"
+        class="d-flex align-center text-decoration-none text-md"
+      >
+        Cart <v-icon class="ml-1 text-sm" icon="mdi-cart" />
+      </RouterLink>
     </v-col>
   </v-row>
 </template>

@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
 import { useCategoryStore, useProductStore } from "@/stores";
 import { onMounted } from "vue-demi";
 import { capitalizeWord } from "@/utils/helpers";
+
+// Components
+import Filter from "./Filter.vue";
 
 const productStore = useProductStore();
 const categoryStore = useCategoryStore();
 
 const { categories, activeCategory, isLoading } = storeToRefs(categoryStore);
 const { getAllCategories, changeActiveCategory } = categoryStore;
+
+const { products } = storeToRefs(productStore);
 const { getProductsByCategory } = productStore;
 
 onMounted(() => {
   getAllCategories();
 });
+
+const isProductsListLoaded = computed(() => !!products.value.length);
 
 const handleChangeActiveCategory = (category: string) => {
   if (category === activeCategory.value) return false;
@@ -48,47 +56,7 @@ const handleChangeActiveCategory = (category: string) => {
         </v-list>
       </v-card>
 
-      <v-card class="rounded-0" variant="outlined" title="Filter">
-        <v-card-item>
-          <div class="py-4">
-            <h4 class="mb-4">Price</h4>
-            <v-text-field
-              type="number"
-              min="0"
-              hide-details
-              density="compact"
-              label="Min price"
-              variant="outlined"
-            />
-            <v-text-field
-              type="number"
-              min="0"
-              hide-details
-              density="compact"
-              label="Max price"
-              variant="outlined"
-            />
-          </div>
-
-          <v-divider></v-divider>
-
-          <div class="py-4">
-            <h4 class="mb-4">Category</h4>
-            <v-checkbox
-              hide-details
-              density="compact"
-              label="John"
-              value="John"
-            ></v-checkbox>
-            <v-checkbox
-              hide-details
-              density="compact"
-              label="Jacob"
-              value="Jacob"
-            ></v-checkbox>
-          </div>
-        </v-card-item>
-      </v-card>
+      <Filter v-if="isProductsListLoaded" />
     </template>
   </v-col>
 </template>

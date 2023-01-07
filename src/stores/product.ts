@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
 import { orderBy } from "lodash";
-import type { IProduct, ISortItem } from "@/utils/types";
+import useFiltersStore from "./filters";
 import { ProductService } from "@/services";
+import type { IProduct, ISortItem } from "@/utils/types";
 
 interface IProductState {
   products: IProduct[];
@@ -28,26 +29,28 @@ const useProductStore = defineStore("products", {
     isError: false,
   }),
   getters: {
-    productsCount(): number {
-      return this.filteredProducts.length;
+    productsCount({ filteredProducts }): number {
+      return filteredProducts.length;
     },
-    productsList(): IProduct[] {
+    productsList({ filteredProducts, activeSortItem }): IProduct[] {
       return orderBy(
-        this.filteredProducts,
-        [this.activeSortItem.value],
-        [this.activeSortItem.order]
+        filteredProducts,
+        [activeSortItem.value],
+        [activeSortItem.order]
       );
     },
   },
   actions: {
     async getProducts() {
+      const { setFilter } = useFiltersStore();
+
       this.isLoading = true;
       this.isError = false;
       try {
         const products = await ProductService.getProducts();
 
         this.products = products;
-        this.filteredProducts = products;
+        setFilter();
       } catch (err) {
         console.log(err);
         this.isError = true;
@@ -56,16 +59,28 @@ const useProductStore = defineStore("products", {
       }
     },
     getProductsByCategory(category: string) {
-      if (category === "all") {
-        this.filteredProducts = this.products;
-        return;
-      }
+      const { setFilter, isFilterChanged } = useFiltersStore();
 
-      const productsByCategory: IProduct[] = this.products.filter(
-        (product) => product.category === category
-      );
+      const productsByCategory =
+        category === "all"
+          ? this.products
+          : this.products.filter((product) => product.category === category);
 
       this.filteredProducts = productsByCategory;
+      isFilterChanged && setFilter();
+    },
+    filterProducts() {
+      const { minPrice, maxPrice, categories } = useFiltersStore();
+
+      const filteredProducts = this.products.filter(({ price, category }) => {
+        return (
+          price >= minPrice &&
+          price <= maxPrice &&
+          (categories.length === 0 || categories.includes(category))
+        );
+      });
+
+      this.filteredProducts = filteredProducts;
     },
     changeSortItem(item: ISortItem) {
       this.activeSortItem = item;

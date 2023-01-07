@@ -60,56 +60,59 @@ const listTitle = computed(() => {
           <p class="text-md">Total products - {{ productsCount }}</p>
         </div>
 
-        <ProductBar
-          :grid-sizes="gridSizes"
-          :active-grid-size="activeGridSize"
-          @change-active-size="changeActiveSize"
-        />
+        <h2 v-if="!productsList.length">Products not found</h2>
+        <div v-else>
+          <ProductBar
+            :grid-sizes="gridSizes"
+            :active-grid-size="activeGridSize"
+            @change-active-size="changeActiveSize"
+          />
 
-        <v-row>
-          <v-col
-            v-for="item in productsList"
-            :key="item.id"
-            class="d-flex"
-            :cols="activeGridSize.value"
-          >
-            <div class="d-flex flex-column flex-grow-1 pa-4 border">
-              <v-img
-                class="align-end flex-grow-0 mb-2"
-                aspect-ratio="1.5"
-                :src="item.image"
-                contain
-              />
-              <p class="text-overline">{{ item.category }}</p>
-              <h5 class="mb-4">{{ item.title }}</h5>
-              <div class="mt-auto">
-                <div class="text-caption d-flex flex-column">
-                  <p class="mb-2 font-weight-bold text-green">
-                    {{ item.price }}$
-                  </p>
-                  <div
-                    class="d-flex flex-wrap justify-space-between align-center mb-4"
-                  >
-                    <v-rating
-                      :model-value="item.rating.rate"
-                      color="warning"
-                      density="compact"
-                      half-increments
-                      readonly
-                    />
-                    <p class="text-md">
-                      {{ item.rating.rate }} ({{ item.rating.count }})
+          <v-row>
+            <v-col
+              v-for="item in productsList"
+              :key="item.id"
+              class="d-flex"
+              :cols="activeGridSize.value"
+            >
+              <div class="d-flex flex-column flex-grow-1 pa-4 border">
+                <v-img
+                  class="align-end flex-grow-0 mb-2"
+                  aspect-ratio="1.5"
+                  :src="item.image"
+                  contain
+                />
+                <p class="text-overline">{{ item.category }}</p>
+                <h5 class="mb-4">{{ item.title }}</h5>
+                <div class="mt-auto">
+                  <div class="text-caption d-flex flex-column">
+                    <p class="mb-2 font-weight-bold text-green">
+                      {{ item.price }}$
                     </p>
+                    <div
+                      class="d-flex flex-wrap justify-space-between align-center mb-4"
+                    >
+                      <v-rating
+                        :model-value="item.rating.rate"
+                        color="warning"
+                        density="compact"
+                        half-increments
+                        readonly
+                      />
+                      <p class="text-md">
+                        {{ item.rating.rate }} ({{ item.rating.count }})
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="mt-auto">
+                    <v-btn color="success" variant="outlined">Buy</v-btn>
                   </div>
                 </div>
-
-                <div class="mt-auto">
-                  <v-btn color="success" variant="outlined">Buy</v-btn>
-                </div>
               </div>
-            </div>
-          </v-col>
-        </v-row>
+            </v-col>
+          </v-row>
+        </div>
       </template>
     </Layout>
   </main>
