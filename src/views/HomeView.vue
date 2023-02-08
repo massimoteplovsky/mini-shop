@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { storeToRefs } from "pinia";
-import { useProductStore, useCategoryStore } from "@/stores";
+import { useProductStore, useCategoryStore, useCartStore } from "@/stores";
 import { capitalizeWord } from "@/utils/helpers";
 import type { IOption } from "@/utils/types";
 
@@ -20,10 +20,12 @@ const activeGridSize = ref(gridSizes[2]);
 
 const productStore = useProductStore();
 const categoryStore = useCategoryStore();
+const cartStore = useCartStore();
 
 const { productsList, isLoading, productsCount } = storeToRefs(productStore);
 const { activeCategory } = storeToRefs(categoryStore);
-const { getProducts } = useProductStore();
+const { getProducts } = productStore;
+const { addToCart } = cartStore;
 
 const changeActiveSize = (value: IOption) => {
   activeGridSize.value = value;
@@ -106,7 +108,12 @@ const listTitle = computed(() => {
                   </div>
 
                   <div class="mt-auto">
-                    <v-btn color="success" variant="outlined">Buy</v-btn>
+                    <v-btn
+                      color="success"
+                      variant="outlined"
+                      @click="addToCart(item)"
+                      >Buy</v-btn
+                    >
                   </div>
                 </div>
               </div>

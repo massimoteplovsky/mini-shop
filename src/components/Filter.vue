@@ -6,16 +6,10 @@ import { useFilterStore, useCategoryStore } from "@/stores";
 import { capitalizeWord } from "@/utils/helpers";
 
 const filterStore = useFilterStore();
-const categoryStore = useCategoryStore();
-
-const {
-  isFilterChanged,
-  minPrice,
-  maxPrice,
-  categories: filterCategories,
-} = storeToRefs(filterStore);
+const { filter } = storeToRefs(filterStore);
 const { changeFilter, setFilter } = filterStore;
 
+const categoryStore = useCategoryStore();
 const { categories } = storeToRefs(categoryStore);
 
 const selectedCategories: Ref<string[]> = ref([]);
@@ -24,9 +18,12 @@ const changeFilterCategories = () => {
   changeFilter("categories", selectedCategories.value);
 };
 
-watch(filterCategories, (newFilterCategories) => {
-  if (!newFilterCategories.length) selectedCategories.value = [];
-});
+watch(
+  () => filter.value.categories,
+  (newFilterCategories) => {
+    if (!newFilterCategories.length) selectedCategories.value = [];
+  }
+);
 </script>
 
 <template>
@@ -38,12 +35,12 @@ watch(filterCategories, (newFilterCategories) => {
           class="mb-4"
           type="number"
           :min="0"
-          :placeholder="String(minPrice)"
+          :placeholder="String(filter.minPrice)"
           hide-details
           density="compact"
           label="Min price"
           variant="outlined"
-          :model-value="minPrice"
+          :model-value="filter.minPrice"
           @update:modelValue="
             (value) => changeFilter('minPrice', Number(value))
           "
@@ -51,13 +48,13 @@ watch(filterCategories, (newFilterCategories) => {
         <v-text-field
           type="number"
           :min="0"
-          :placeholder="String(maxPrice)"
+          :placeholder="String(filter.maxPrice)"
           hide-details
           density="compact"
           label="Max price"
           variant="outlined"
           validate-on="blur"
-          :model-value="maxPrice"
+          :model-value="filter.maxPrice"
           @update:modelValue="
             (value) => changeFilter('maxPrice', Number(value))
           "
@@ -81,7 +78,7 @@ watch(filterCategories, (newFilterCategories) => {
       </div>
 
       <v-btn
-        v-if="isFilterChanged"
+        v-if="filter.isFilterChanged"
         color="success"
         variant="outlined"
         @click="setFilter"

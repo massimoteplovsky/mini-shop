@@ -11,6 +11,11 @@ export interface IProduct {
   };
 }
 
+export interface ICartProduct extends IProduct {
+  quantity: number;
+  totalPrice: number | string;
+}
+
 export interface ISortItem {
   label: string;
   value: string;

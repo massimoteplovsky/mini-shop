@@ -1,43 +1,44 @@
+import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { CategoryService } from "@/services";
 
-interface ICategoryState {
-  categories: string[];
-  activeCategory: string;
-  isLoading: boolean;
-  isError: boolean;
-}
+const useCategoryStore = defineStore("categories", () => {
+  // State
+  const categories = ref<string[]>([]);
+  const activeCategory = ref<string>("all");
+  const isLoading = ref<boolean>(false);
+  const isError = ref<boolean>(false);
 
-const useCategoryStore = defineStore("categories", {
-  state: (): ICategoryState => ({
-    categories: [],
-    activeCategory: "all",
-    isLoading: false,
-    isError: false,
-  }),
-  getters: {
-    categoriesCount(): number {
-      return this.categories.length - 1;
-    },
-  },
-  actions: {
-    changeActiveCategory(category: string) {
-      this.activeCategory = category;
-    },
-    async getAllCategories() {
-      this.isLoading = true;
-      this.isError = false;
+  // Getters
+  const categoriesCount = computed(() => categories.value.length);
 
-      try {
-        const categories = await CategoryService.getAllCategories();
-        this.categories = ["all", ...categories];
-      } catch (err) {
-        console.log(err);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-  },
+  // Actions
+  const changeActiveCategory = (category: string) => {
+    activeCategory.value = category;
+  };
+  const getAllCategories = async () => {
+    isLoading.value = true;
+    isError.value = false;
+
+    try {
+      const allCategories = await CategoryService.getAllCategories();
+      categories.value = ["all", ...allCategories];
+    } catch (err) {
+      console.log(err);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  return {
+    categories,
+    activeCategory,
+    isLoading,
+    isError,
+    categoriesCount,
+    changeActiveCategory,
+    getAllCategories,
+  };
 });
 
 export default useCategoryStore;
